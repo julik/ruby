@@ -67,8 +67,7 @@ module WEBrick
 
     def run(sock)
       while true
-        res = HTTPResponse.new(@config)
-        req = HTTPRequest.new(@config)
+        req, res = create_request_and_response(@config)
         server = self
         begin
           timeout = @config[:RequestTimeout]
@@ -222,7 +221,14 @@ module WEBrick
         logger << AccessLog::format(fmt+"\n", param)
       }
     end
-
+    
+    ##
+    # Creates the HTTPRequest and HTTPResponse objects used when handling the HTTP
+    # request. Can be overridden by subclasses.
+    def create_request_and_response(with_webrick_config)
+      [HTTPRequest.new(with_webrick_config), HTTPResponse.new(with_webrick_config)]
+    end
+    
     ##
     # Mount table for the path a servlet is mounted on in the directory space
     # of the server.  Users of WEBrick can only access this indirectly via
